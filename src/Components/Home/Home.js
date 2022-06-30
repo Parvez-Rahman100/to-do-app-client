@@ -1,20 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
+import useTodos from '../hooks/useTodos';
 
 const Home = () => {
-    const [todos,setTodos] = useState([])
+    const [todos] = useTodos()
     const { register, handleSubmit } = useForm();
 
-    useEffect(()=>{
-        const url = 'http://localhost:5000/todo';
-        fetch(url)
-        .then(res=>res.json())
-        .then(data =>setTodos(data));
-    },[])
 
-    const onSubmit = data => {
-        fetch('http://localhost:5000/todo',{
+    const onSubmit = (data,event) => {
+        fetch('https://todo-app-parvez.herokuapp.com/todo',{
         method:'POST',
         headers:{
           'content-type':'application/json'
@@ -23,7 +18,8 @@ const Home = () => {
       })
       .then(res=>res.json())
       .then(data=>{
-        if(data.success){
+        console.log(data);
+        if(data.acknowledged === true){
           toast.success(`Successfully added todo`)
         }
         else{
@@ -37,15 +33,15 @@ const Home = () => {
             <h1 className='text-center text-4xl text-orange-600 my-10'>Welcome to To Do App</h1>
 
             <form onSubmit={handleSubmit(onSubmit)}>
-                <input placeholder='Enter Your ToDo List...' className='p-4 border-4 rounded-lg text-black font-bold' {...register("todoTask")} />
+                <input placeholder='Enter Your ToDo List...' className='p-4 border-4 rounded-lg text-black font-bold' {...register("todoTask")} required />
                 <input className='btn btn-secondary w-1/5 block mx-auto my-5' type="submit" value='Add' />
              </form>
              {
                 todos.map(todo=> <div key={todo._id}>
                     <div className='flex justify-center items-center'>
-                    <input type="radio" name="radio-2" class="radio radio-primary" />
+                    <input type="checkbox" class="checkbox checkbox-primary" />
                     <ul>
-                    <li className=' ml-3'>{todo.todoTask}</li>
+                    <li id='todo' className='ml-3'>{todo.todoTask}</li>
                     </ul>
                     </div>
                 </div>)
